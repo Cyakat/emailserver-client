@@ -9,102 +9,6 @@ defaultDir = "./email/users/"
 
 --starting size: 6139
 
-messageClass = {
-  function refresh ()
-    userDir = defaultDir..user.."/"
-    message1 = readFile(userDir, "message1")
-    message2 = readFile(userDir, "message2")
-    message3 = readFile(userDir, "message3")
-    message4 = readFile(userDir, "message4")
-    message5 = readFile(userDir, "message5")
-
-    encryptedMessage1 = encrypt(message1)
-    encryptedMessage2 = encrypt(message2)
-    encryptedMessage3 = encrypt(message3)
-    encryptedMessage4 = encrypt(message4)
-    encryptedMessage5 = encrypt(message5)
-
-    return encryptedMessage1, encryptedMessage2, encryptedMessage3, encryptedMessage4, encryptedMessage5
-  end
-  ,
-  function load(messageNumber)
-    messageNumber = tostring(messageNumber)
-
-    file = io.open(defaultDir..user.."/message"..messageNumber,"r")
-    size = fs.size(defaultDir..user.."/message"..messageNumber)
-    message = file: read(size)
-
-    shortMessage = str.sub(message,0,20)
-    shortMessage = shortMessage.."..."
-
-    encryptedShortMessage = encrypt(shortMessage)
-    encryptedMessage = encrypt(message)
-
-    return encryptedMessage, encryptedShortMessage
-  end
-  ,
-  function view ()
-    response = "hello"
-    while response ~= "exit" do
-      print("waiting for response")
-      _,_,_,_,_, encryptedResponse = event.pull("modem")
-
-      response = decrypt(encryptedResponse)
-
-      if response == "1" then
-        print("sending message1")
-        m.broadcast(1, encryptedMessage1)
-      elseif response == "2" then
-        print("sending message2")
-        m.broadcast(1, encryptedMessage2)
-      elseif response == "3" then
-        print("sending message3")
-        m.broadcast(1, encryptedMessage3)
-      elseif response == "4" then
-        print("sending message4")
-        m.broadcast(1, encryptedMessage4)
-      elseif response == "5" then
-        print("sending Message5")
-        m.broadcast(1, encryptedMessage5)
-      else
-        repsonse = "exit"
-      end
-    end
-  end
-  ,
-  function update ()
-    message2 = readFile(userDir, "message1")
-    message3 = readFile(userDir, "message2")
-    message4 = readFile(userDir, "message3")
-    message5 = readFile(userDir, "message4")
-
-    writeFile(userDir, "message2", message2)
-    writeFile(userDir, "message3", message3)
-    writeFile(userDir, "message4", message4)
-    writeFile(userDir, "message5", message5)
-    writeFile(userDir, "message1", message)
-  end
-  ,
-  function write()
-    print("waiting for user address")
-    _,_,_,_,_, encryptedUser = event.pull("modem")
-
-    username = decrypt(encryptedUser)
-
-    print("waiting for encrypted message")
-    _,_,_,_,_, encryptedMessage = event.pull("modem")
-
-    userDir = defaultDir..username.."/"
-
-    message = decrypt(encryptedMessage)
-    message = user..": "..message
-
-    print("message sent to "..username)
-
-    return message
-  end
-}
-
 function startup ()
   m.open(1)
   print("generating key pair")
@@ -155,6 +59,23 @@ function encrypt (text)
   print("Encrypting")
   encryptedText = d.encrypt(text, sharedKey, iv)
   return encryptedText
+end
+
+function refresh ()
+  userDir = defaultDir..user.."/"
+  message1 = readFile(userDir, "message1")
+  message2 = readFile(userDir, "message2")
+  message3 = readFile(userDir, "message3")
+  message4 = readFile(userDir, "message4")
+  message5 = readFile(userDir, "message5")
+
+  encryptedMessage1 = encrypt(message1)
+  encryptedMessage2 = encrypt(message2)
+  encryptedMessage3 = encrypt(message3)
+  encryptedMessage4 = encrypt(message4)
+  encryptedMessage5 = encrypt(message5)
+
+  return encryptedMessage1, encryptedMessage2, encryptedMessage3, encryptedMessage4, encryptedMessage5
 end
 
 function getKeyAndIv ()
@@ -218,6 +139,85 @@ function checkPassword ()
   return realPassword
 end
 
+function loadMessage(messageNumber)
+  messageNumber = tostring(messageNumber)
+
+  file = io.open(defaultDir..user.."/message"..messageNumber,"r")
+  size = fs.size(defaultDir..user.."/message"..messageNumber)
+  message = file: read(size)
+
+  shortMessage = str.sub(message,0,20)
+  shortMessage = shortMessage.."..."
+
+  encryptedShortMessage = encrypt(shortMessage)
+  encryptedMessage = encrypt(message)
+
+  return encryptedMessage, encryptedShortMessage
+end
+
+function viewMessages ()
+  response = "hello"
+  while response ~= "exit" do
+    print("waiting for response")
+    _,_,_,_,_, encryptedResponse = event.pull("modem")
+
+    response = decrypt(encryptedResponse)
+
+    if response == "1" then
+      print("sending message1")
+      m.broadcast(1, encryptedMessage1)
+    elseif response == "2" then
+      print("sending message2")
+      m.broadcast(1, encryptedMessage2)
+    elseif response == "3" then
+      print("sending message3")
+      m.broadcast(1, encryptedMessage3)
+    elseif response == "4" then
+      print("sending message4")
+      m.broadcast(1, encryptedMessage4)
+    elseif response == "5" then
+      print("sending Message5")
+      m.broadcast(1, encryptedMessage5)
+    else
+      repsonse = "exit"
+    end
+  end
+end
+
+function updateMessages ()
+  message2 = readFile(userDir, "message1")
+  message3 = readFile(userDir, "message2")
+  message4 = readFile(userDir, "message3")
+  message5 = readFile(userDir, "message4")
+
+  writeFile(userDir, "message2", message2)
+  writeFile(userDir, "message3", message3)
+  writeFile(userDir, "message4", message4)
+  writeFile(userDir, "message5", message5)
+  writeFile(userDir, "message1", message)
+end
+
+function writeMessage()
+  print("waiting for user address")
+  _,_,_,_,_, encryptedUser = event.pull("modem")
+
+  username = decrypt(encryptedUser)
+
+  print("waiting for encrypted message")
+  _,_,_,_,_, encryptedMessage = event.pull("modem")
+
+  userDir = defaultDir..username.."/"
+
+  message = decrypt(encryptedMessage)
+  message = user..": "..message
+
+  print("message sent to "..username)
+
+  updateMessages()
+
+  encryptedMessage1, encryptedMessage2, encryptedMessage3, encryptedMessage4, encryptedMessage5 = refresh()
+end
+
 function main ()
   outerPublicKeySerialized, iv = getKeyAndIv()
   sharedKey = generateSharedKey(deserialize(outerPublicKeySerialized, "public"), privateKey)
@@ -235,11 +235,11 @@ function main ()
       encryptedMatch = encrypt(match)
       m.broadcast(1,encryptedMatch)
 
-      encryptedMessage1, encryptedShortMessage1 = messageClass.load(1)
-      encryptedMessage2, encryptedShortMessage2 = messageClass.load(2)
-      encryptedMessage3, encryptedShortMessage3 = messageClass.load(3)
-      encryptedMessage4, encryptedShortMessage4 = messageClass.load(4)
-      encryptedMessage5, encryptedShortMessage5 = messageClass.load(5)
+      encryptedMessage1, encryptedShortMessage1 = loadMessage(1)
+      encryptedMessage2, encryptedShortMessage2 = loadMessage(2)
+      encryptedMessage3, encryptedShortMessage3 = loadMessage(3)
+      encryptedMessage4, encryptedShortMessage4 = loadMessage(4)
+      encryptedMessage5, encryptedShortMessage5 = loadMessage(5)
 
 
       print("sending preview messages")
@@ -257,13 +257,10 @@ function main ()
         sendOrRead = decrypt(encryptedSendOrRead)
 
         if sendOrRead == "read" then
-          messageClass.view()
+          viewMessages()
           sendOrRead = "hi"
         elseif sendOrRead == "send" then
-          message = messageClass.write()
-          messageClass.update()
-          encryptedMessage1, encryptedMessage2, encryptedMessage3, encryptedMessage4, encryptedMessage5 = refresh()
-
+          writeMessage()
           sendOrRead = "hi"
         elseif sendOrRead == "exit" then
           sendOrRead = "exit"
