@@ -1,11 +1,23 @@
-local fs = require("filesystem")
-local comp = require("component")
-local event = require("event")
-local messageClass = require("./client-classes/messageClassClient")
+fs = require("filesystem")
+comp = require("component")
+event = require("event")
+messageClass = require("messageClassClient")
+
+print(messageClass)
 
 m = comp.modem
 d = comp.data
 str = string
+
+--the function below is not my code but I'm glad it exists
+--prints in a specified color
+local function cWrite( text, fgc, pIndex )
+	local old_fgc, isPalette = gpu.getForeground()
+	pIndex = ( type( pIndex ) == 'boolean' ) and pIndex or false
+	gpu.setForeground( fgc, pIndex )
+	print( text )
+	gpu.setForeground( old_fgc, isPalette )
+end
 
 function encrypt (text)
   print("Encrypting")
@@ -132,7 +144,7 @@ function main ()
         while viewMessage ~= "exit" do
           exit = messageClass.view()
           if exit == false then
-            messageClass.load()
+            exit = messageClass.load(viewMessage)
           end
         end
       elseif choice == "2" then

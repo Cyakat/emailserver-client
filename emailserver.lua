@@ -1,7 +1,7 @@
-local fs = require("filesystem")
-local comp = require("component")
-local event = require("event")
-local messageClass = require("./client-classes/messageClassClient")
+fs = require("filesystem")
+comp = require("component")
+event = require("event")
+messageClass = require("messageClassServer")
 
 m = comp.modem
 d = comp.data
@@ -167,7 +167,7 @@ function main ()
         elseif sendOrRead == "send" then
           message = messageClass.write()
           messageClass.update()
-          encryptedMessage1, encryptedMessage2, encryptedMessage3, encryptedMessage4, encryptedMessage5 = refresh()
+          encryptedMessage1, encryptedMessage2, encryptedMessage3, encryptedMessage4, encryptedMessage5 = messageClass.refresh()
 
           sendOrRead = "hi"
         elseif sendOrRead == "exit" then

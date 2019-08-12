@@ -1,4 +1,10 @@
-function loadMessagePreviews ()
+local messageClass = {}
+
+d = comp.data
+m = comp.modem
+
+
+function messageClass.loadPreviews ()
   print("Loading message previews")
   _,_,_,_,_, encryptedShortMessage1 = event.pull("modem")
   _,_,_,_,_, encryptedShortMessage2 = event.pull("modem")
@@ -13,7 +19,7 @@ function loadMessagePreviews ()
   shortMessage5 = decrypt(encryptedShortMessage5)
 end
 
-function loadMessage(messageNumber)
+function messageClass.load (messageNumber)
   encryptedViewMessage = encrypt(tostring(messageNumber))
   m.broadcast(1,encryptedViewMessage)
 
@@ -26,7 +32,7 @@ function loadMessage(messageNumber)
   viewMessage = io.read()
 end
 
-function viewMessages()
+function messageClass.view ()
   sendOrRead = "read"
 
   encryptedSendOrRead = encrypt(sendOrRead)
@@ -44,7 +50,7 @@ function viewMessages()
   end
 end
 
-function sendMessage ()
+function messageClass.send ()
   sendOrRead = "send"
 
   encryptedSendOrRead = encrypt(sendOrRead)
@@ -62,9 +68,4 @@ function sendMessage ()
   m.broadcast(1,encryptedMessage)
 end
 
-messageClass = {
-  loadPreviews = loadMessagePreviews,
-  load = loadMessage,
-  view = viewMessages,
-  send = sendMessage
-}
+return messageClass

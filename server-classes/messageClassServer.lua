@@ -1,4 +1,10 @@
-function refreshMessages ()
+local messageClass = {}
+
+d = comp.data
+m = comp.modem
+str = string
+
+function messageClass.refresh ()
   userDir = defaultDir..user.."/"
   message1 = readFile(userDir, "message1")
   message2 = readFile(userDir, "message2")
@@ -15,7 +21,7 @@ function refreshMessages ()
   return encryptedMessage1, encryptedMessage2, encryptedMessage3, encryptedMessage4, encryptedMessage5
 end
 
-function loadMessage (messageNumber)
+function messageClass.load (messageNumber)
   messageNumber = tostring(messageNumber)
 
   file = io.open(defaultDir..user.."/message"..messageNumber,"r")
@@ -31,7 +37,7 @@ function loadMessage (messageNumber)
   return encryptedMessage, encryptedShortMessage
 end
 
-function viewMessages ()
+function messageClass.view ()
   response = "hello"
   while response ~= "exit" do
     print("waiting for response")
@@ -60,7 +66,7 @@ function viewMessages ()
   end
 end
 
-function updateMessages ()
+function messageClass.update ()
   message2 = readFile(userDir, "message1")
   message3 = readFile(userDir, "message2")
   message4 = readFile(userDir, "message3")
@@ -73,7 +79,7 @@ function updateMessages ()
   writeFile(userDir, "message1", message)
 end
 
-function writeMessages ()
+function messageClass.write ()
   print("waiting for user address")
   _,_,_,_,_, encryptedUser = event.pull("modem")
 
@@ -92,10 +98,6 @@ function writeMessages ()
   return message
 end
 
-messageClass = {
-  refresh = refreshMessages,
-  load = loadMessage,
-  view = viewMessages,
-  update = updateMessages,
-  write = writeMessages
-}
+
+
+return messageClass
