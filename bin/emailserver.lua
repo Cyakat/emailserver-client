@@ -11,7 +11,7 @@ defaultDir = "./email/users/"
 --starting size: 6139
 
 function startup ()
-  m.open(1)
+  m.open(1337)
   print("generating key pair")
   publicKey,privateKey = d.generateKeyPair(256)
 
@@ -64,7 +64,8 @@ end
 
 function getKeyAndIv ()
   _,_,_,_,_, outerPublicKeySerialized = event.pull("modem")
-  m.broadcast(1,publicKeySerialized)
+  m.broadcast(1337,"out")
+  m.broadcast(1337,publicKeySerialized)
 
   _,_,_,_,_, iv = event.pull("modem")
 
@@ -91,7 +92,7 @@ function accountCreate ()
   local blank = "nothing"
   print("asking if user would like to make an account")
   makeAccount = encrypt("accountCreate")
-  m.broadcast(1,makeAccount)
+  m.broadcast(1337,makeAccount)
   print("waiting for user response")
   _,_,_,_,_, encryptedResponse = event.pull("modem")
 
@@ -138,7 +139,7 @@ function main ()
     if realPassword == password then
       match = "match"
       encryptedMatch = encrypt(match)
-      m.broadcast(1,encryptedMatch)
+      m.broadcast(1337,encryptedMatch)
 
       encryptedMessage1, encryptedShortMessage1 = messageClass.load(1)
       encryptedMessage2, encryptedShortMessage2 = messageClass.load(2)
@@ -148,11 +149,11 @@ function main ()
 
 
       print("sending preview messages")
-      m.broadcast(1, encryptedShortMessage1)
-      m.broadcast(1, encryptedShortMessage2)
-      m.broadcast(1, encryptedShortMessage3)
-      m.broadcast(1, encryptedShortMessage4)
-      m.broadcast(1, encryptedShortMessage5)
+      m.broadcast(1337, encryptedShortMessage1)
+      m.broadcast(1337, encryptedShortMessage2)
+      m.broadcast(1337, encryptedShortMessage3)
+      m.broadcast(1337, encryptedShortMessage4)
+      m.broadcast(1337, encryptedShortMessage5)
 
       sendOrRead = "hi"
       while sendOrRead ~= "exit" do
@@ -178,7 +179,7 @@ function main ()
       match = "noMatch"
       encryptedMatch = encrypt(match)
 
-      m.broadcast(1,encryptedMatch)
+      m.broadcast(1337,encryptedMatch)
     end
   end
 end

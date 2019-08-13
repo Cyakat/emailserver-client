@@ -9,6 +9,10 @@ m = comp.modem
 d = comp.data
 str = string
 
+subjectColor = "0x2eb6ff"
+numberColor = "0xb52a38"
+
+
 --the function below is not my code but I'm glad it exists
 --prints in a specified color
 local function cWrite( text, fgc, pIndex )
