@@ -76,10 +76,13 @@ function readFile (directory, fileName)
 end
 
 function getKeyAndIv ()
+	m.broadcast(1,"in")
   m.broadcast(1,publicKeySerialized)
+	_,_,_,_,_, numericalAddress = event.pull("modem")
   _,_,_,_,_, outerPublicKeySerialized = event.pull("modem")
 
   iv = d.random(16)
+	m.broadcast(1,"in")
   m.broadcast(1,iv)
 
   return outerPublicKeySerialized, iv
@@ -93,12 +96,14 @@ function accountCreate ()
     response = "true"
     encryptedResponse = encrypt(response)
 
+		m.broadcast(1, "in")
     m.broadcast(1,encryptedResponse)
 
     print("Please enter the password you would like to have.")
     password = io.read()
 
     encryptedPassword = encrypt(password)
+		m.broadcast(1, "in")
     m.broadcast(1,encryptedPassword)
 
     print("Account created")
@@ -113,9 +118,11 @@ function signIn ()
   password = io.read()
 
   encryptedUser = encrypt(user)
+	m.broadcast(1, "in")
   m.broadcast(1,encryptedUser)
 
   encryptedPassword = encrypt(password)
+	m.broadcastAddress(1, "in")
   m.broadcast(1,encryptedPassword)
 
   print("Checking if password matches")
@@ -155,6 +162,7 @@ function main ()
         messageClass.send()
       elseif choice == "exit" then
         encryptedChoice = encrypt(choice)
+				m.broadcast(1, "in")
         m.broadcast(1,encryptedChoice)
       end
     end

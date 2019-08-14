@@ -7,6 +7,7 @@ m = comp.modem
 d = comp.data
 str = string
 defaultDir = "./email/users/"
+assignedAddress
 
 --starting size: 6139
 
@@ -17,6 +18,22 @@ function startup ()
 
   publicKeySerialized = publicKey.serialize()
   privateKeySerialized = privateKey.serialize()
+  addressAssigned()
+end
+
+function addressAssigned()
+  _,_,_,_,_, assignedAddress = event.pull("modem")
+end
+
+function checkIfWanted()
+  _,_,_,_,_, address = event.pull("modem")
+  if address == assignedAddress then
+    wanted = true
+  else
+    wanted = false
+  end
+
+  return wanted
 end
 
 function generateSharedKey (outerPublicKey, privateKey)
@@ -63,21 +80,29 @@ function encrypt (text)
 end
 
 function getKeyAndIv ()
-  _,_,_,_,_, outerPublicKeySerialized = event.pull("modem")
+  if checkIfWanted() then
+    _,_,_,_,_, outerPublicKeySerialized = event.pull("modem")
+  end
   m.broadcast(1337,"out")
   m.broadcast(1337,publicKeySerialized)
 
-  _,_,_,_,_, iv = event.pull("modem")
+  if checkIfWanted() then
+    _,_,_,_,_, iv = event.pull("modem")
+  end
 
   return outerPublicKeySerialized, iv
 end
 
 function signIn ()
   print("listening for encrypted username")
-  _,_,_,_,_, encryptedUser = event.pull("modem")
+  if checkIfWanted() then
+    _,_,_,_,_, encryptedUser = event.pull("modem")
+  end
 
   print("listening for encrypted password")
-  _,_,_,_,_, encryptedPassword = event.pull("modem")
+  if checkIfWanted() then
+    _,_,_,_,_, encryptedPassword = event.pull("modem")
+  end
 
   print(encryptedPassword.."\n")
   print(encryptedUser.."\n")
@@ -92,16 +117,21 @@ function accountCreate ()
   local blank = "nothing"
   print("asking if user would like to make an account")
   makeAccount = encrypt("accountCreate")
+  m.broadcast(1337,out)
   m.broadcast(1337,makeAccount)
   print("waiting for user response")
-  _,_,_,_,_, encryptedResponse = event.pull("modem")
+  if checkIfWanted() then
+    _,_,_,_,_, encryptedResponse = event.pull("modem")
+  end
 
   response = decrypt(encryptedResponse)
 
   if response == "true" then
     local userDir = defaultDir..user.."/"
     fs.makeDirectory(userDir)
-    _,_,_,_,_, encryptedPassword = event.pull("modem")
+    if checkIfWanted() then
+      _,_,_,_,_, encryptedPassword = event.pull("modem")
+    end
 
     password = decrypt(encryptedPassword)
 
@@ -139,6 +169,7 @@ function main ()
     if realPassword == password then
       match = "match"
       encryptedMatch = encrypt(match)
+      m.broadcast(1337, "out")
       m.broadcast(1337,encryptedMatch)
 
       encryptedMessage1, encryptedShortMessage1 = messageClass.load(1)
@@ -149,16 +180,23 @@ function main ()
 
 
       print("sending preview messages")
+      m.broadcast(1337, "out")
       m.broadcast(1337, encryptedShortMessage1)
+      m.broadcast(1337, "out")
       m.broadcast(1337, encryptedShortMessage2)
+      m.broadcast(1337, "out")
       m.broadcast(1337, encryptedShortMessage3)
+      m.broadcast(1337, "out")
       m.broadcast(1337, encryptedShortMessage4)
+      m.broadcast(1337, "out")
       m.broadcast(1337, encryptedShortMessage5)
 
       sendOrRead = "hi"
       while sendOrRead ~= "exit" do
         print("asking send or read")
-        _,_,_,_,_, encryptedSendOrRead = event.pull("modem")
+        if checkIfWanted() then
+          _,_,_,_,_, encryptedSendOrRead = event.pull("modem")
+        end
 
         sendOrRead = decrypt(encryptedSendOrRead)
 
@@ -179,6 +217,7 @@ function main ()
       match = "noMatch"
       encryptedMatch = encrypt(match)
 
+      m.broadcast(1337, "out")
       m.broadcast(1337,encryptedMatch)
     end
   end
