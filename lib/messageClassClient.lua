@@ -28,7 +28,7 @@ function messageClass.load (messageNumber)
 
   message = decrypt(encryptedMessage)
 
-  print("Here is your message type exit when you would like to read another message:\n"..message)
+  print("Here is your message. Type exit when you would like to read another message:\n"..message)
   viewMessage = io.read()
 end
 
@@ -56,7 +56,7 @@ function messageClass.send ()
   encryptedSendOrRead = encrypt(sendOrRead)
   m.broadcast(1,encryptedSendOrRead)
 
-  print("Please enter the username of the person you would like to send your message to")
+  print("Please enter the username of the person you would like to send your message to.")
   username = io.read()
 
   encryptedUsername = encrypt(username)
