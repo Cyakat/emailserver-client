@@ -7,7 +7,7 @@ m = comp.modem
 d = comp.data
 str = string
 defaultDir = "./email/users/"
-assignedAddress
+assignedAddress = ""
 
 --starting size: 6139
 
@@ -22,6 +22,8 @@ function startup ()
 end
 
 function addressAssigned()
+  m.broadcast(1, "needAddress")
+  m.broadcast(1, "lolgay")
   _,_,_,_,_, assignedAddress = event.pull("modem")
 end
 

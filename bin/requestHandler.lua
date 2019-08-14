@@ -14,19 +14,11 @@ local serversInSystem = 10
 local serverTable = {}
 local userTable = {}
 
-local function startup ()
-  m.open(1)
-  m.open(1337)
-
-  loadServers()
-  assignServerAddress()
-end
-
-local function assignDestinationTable(serverAddress, userNumericalAddress, terminateConnection)
+function assignDestinationTable(serverAddress, userNumericalAddress, terminateConnection)
   if terminateConnection == nil then
     terminateConnection = false
   end
-  for local i = 1,table.getn(destinationTable),1 do
+  for i = 1,#destinationTable,1 do
     if destinationTable[i] == nil then
       destinationTable[i] = userNumericalAddress
       break
@@ -37,12 +29,12 @@ local function assignDestinationTable(serverAddress, userNumericalAddress, termi
   end
 end
 --[[
-local function userAssignAddress(userAddress, terminateConnection)
+function userAssignAddress(userAddress, terminateConnection)
   if terminateConnection == nil then
     terminateConnection = false
   end
-  if table.getn(userTable) ~= 0 then
-    for local i = 1,table.getn(userTable),1 do
+  if #userTable ~= 0 then
+    for i = 1,#userTable,1 do
       if userTable[i] == nil then
         userTable[i] = userAddress
         break
@@ -54,13 +46,13 @@ local function userAssignAddress(userAddress, terminateConnection)
   end
 end
 ]]
-local function getUserAddress(userAddress, terminateConnection)
+function getUserAddress(userAddress, terminateConnection)
   if terminateConnection == nil then
     terminateConnection = false
   end
   local userNumericalAddress
   local exists
-  for local i=1,table.getn(userTable),1 do
+  for i =1,#userTable,1 do
     if userAddress == userTable[i] then
       userNumericalAddress = tostring(i)
       exists = true
@@ -76,7 +68,7 @@ local function getUserAddress(userAddress, terminateConnection)
     end
   end
   if exists == false then
-    for local i = 1,table.getn(userTable), do
+    for i = 1,#userTable,1 do
       if userTable[i] == nil then
         userTable[i] = userAddress
       end
@@ -90,12 +82,12 @@ local function getUserAddress(userAddress, terminateConnection)
   return userNumericalAddress
 end
 
-local function loadServers()
+function loadServers()
   local location
   local addresses2
-  local addresses, size = readFile(defaultDir, "serverAdresses.txt")
+  local addresses, size = readFile(defaultDir, "serverAddresses.txt")
 
-  for local i=1,serversInSystem,1 do
+  for i =1,serversInSystem,1 do
     location = str.find(addresses, "\n")
     addresses2 = str.gsub("\n","",1)
     location2 = str.find(addresses2,"\n")
@@ -105,16 +97,16 @@ local function loadServers()
   end
 end
 
-local function assignServerAddress()
-  for local i = 1,table.getn(serverTable),1 do
-    m.send(1337, serverTable[i], i)
+function assignServerAddress()
+  for i = 1,#serverTable,1 do
+    m.send(serverTable[i], 1337, i)
   end
 end
 
-local function checkFromServer(address)
+function checkFromServer(address)
   local isSever
 
-  for local i=1,serversInSystem,1 do
+  for i =1,serversInSystem,1 do
     if address == addressTable[i] then
       isSever = true
       break
@@ -126,23 +118,23 @@ local function checkFromServer(address)
   return isSever
 end
 
-local function sendToServer(serverAddress, message)
+function sendToServer(serverAddress, message)
   m.broadcast(1337, serverAddress)
   m.broadcast(1337, message)
 end
 
-local function sendToUser(serverAddress, message)
+function sendToUser(serverAddress, message)
   m.broadcast(1, destinationTable[serverAddress])
   m.broadcast(1, message)
 end
 
-local function writeFile(directory, fileName, text)
+function writeFile(directory, fileName, text)
   file = io.open(directory..fileName, "w")
   file: write(text)
   file: close()
 end
 
-local function readFile (directory, fileName)
+function readFile (directory, fileName)
   file = io.open(directory..fileName, "r")
   size = fs.size(directory..fileName)
   text = file: read(size)
@@ -150,7 +142,15 @@ local function readFile (directory, fileName)
   return text, size
 end
 
-local function main ()
+function startup ()
+  m.open(1)
+  m.open(1337)
+
+  loadServers()
+  assignServerAddress()
+end
+
+function main ()
   print("listening for incoming requests")
   local _,_, address,_,_, info = event.pull("modem")
 
@@ -158,9 +158,9 @@ local function main ()
 
   if info ==  "in" then
     ::again::
-    if table.getn(destinationTable) ~= 0 then
+    if #destinationTable ~= 0 then
       local userNumericalAddress = getUserAddress(address)
-      for local i = 1,table.getn(destinationTable),1 do
+      for i = 1,#destinationTable,1 do
         if userNumericalAddress == destinationTable[i] then
           sendToServer(i, message)
           failed = false
@@ -181,7 +181,7 @@ local function main ()
   elseif info == "out" then
     isServer = checkFromServer(address)
     if isServer then
-      for local i = 1,table.getn(destinationTable),1 do
+      for i = 1,#destinationTable,1 do
         if address == serverTable[i] then
           sendToUser(i, message)
           break
@@ -190,8 +190,19 @@ local function main ()
     else
       m.broadcast(1,"invalid request")
     end
+  elseif info == "needAddress" then
+    for i = 1,#serverTable,1 do
+      if serverTable[i] == nil then
+        serverTable[i] = address
+        m.send(address, 1337, i)
+        break
+      end
+    end
   end
 end
 
 startup()
-main()
+
+while true do
+  main()
+end
