@@ -15,7 +15,8 @@ It uses the T3 data card's public/private key encryption.
 ## Running
 Both computers require at least the minimum hardware.
 If you don't have an account it will ask if you would like to make one.
-Due to a bug with opencomputers there is no end to end encryption.
+~~Due to a bug with opencomputers there is no end to end encryption.~~
+Turns out it might just be me and I should fix it soon but school exists so I can't at the moment.
 
 ## Installation
 Set up the server file on the computer you would like to be the server.
