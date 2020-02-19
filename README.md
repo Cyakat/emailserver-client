@@ -2,6 +2,12 @@
 This is a little email server and client I made for opencomputers.
 It uses the T3 data card's public/private key encryption.
 
+# Current Version
+The current version is a little broken because I had tried to make a change but only did halfway. I am working on fixing it. It is quite buggy and breaks frequently. If find an obvious bug I will already know about it. If the issue is something not obvious go ahead and post it.
+
+# New Features
+I am currently working on a multi-server version of the server. Right now a single server can only handle one client. With the new feature you can have multiple email servers with a single request handler out the front. This new feature is still in development but will be done within the week.
+
 ## Hardware Requirements
 ### Minimum
 * You will need:
