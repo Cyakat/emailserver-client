@@ -79,7 +79,6 @@ function getKeyAndIv ()
 	m.broadcast(1,"in")
 	m.broadcast(1,"needAddress")
   m.broadcast(1,publicKeySerialized)
-	_,_,_,_,_, numericalAddress = event.pull("modem")
   _,_,_,_,_, outerPublicKeySerialized = event.pull("modem")
 
   iv = d.random(16)

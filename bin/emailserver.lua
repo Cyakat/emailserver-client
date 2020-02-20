@@ -6,7 +6,7 @@ messageClass = require("messageClassServer")
 m = comp.modem
 d = comp.data
 str = string
-defaultDir = "./email/users/"
+defaultDir = "/email/users/"
 assignedAddress = ""
 
 --starting size: 6139
@@ -18,24 +18,10 @@ function startup ()
 
   publicKeySerialized = publicKey.serialize()
   privateKeySerialized = privateKey.serialize()
-  addressAssigned()
-end
-
-function addressAssigned()
-  m.broadcast(1, "needAddress")
-  m.broadcast(1, "lolgay")
-  _,_,_,_,_, assignedAddress = event.pull("modem")
 end
 
 function checkIfWanted()
-  _,_,_,_,_, address = event.pull("modem")
-  if address == assignedAddress then
-    wanted = true
-  else
-    wanted = false
-  end
 
-  return wanted
 end
 
 function generateSharedKey (outerPublicKey, privateKey)
@@ -119,7 +105,7 @@ function accountCreate ()
   local blank = "nothing"
   print("asking if user would like to make an account")
   makeAccount = encrypt("accountCreate")
-  m.broadcast(1337,out)
+  m.broadcast(1337,"out")
   m.broadcast(1337,makeAccount)
   print("waiting for user response")
   if checkIfWanted() then

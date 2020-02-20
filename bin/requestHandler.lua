@@ -87,7 +87,9 @@ if info == "in" then
     serverAddress = findCorrespondingServer(address, "user")
     sendUserDataToServer(serverAddress, data)
   else
+    logging.debug("assigning new server to client")
     assignAddress()
+    logging.debug("server assigned")
   end
 elseif info == "out" then
   logging.debug("received out request")
