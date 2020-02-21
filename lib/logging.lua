@@ -1,42 +1,42 @@
 local logging = {}
 
 function logging.level(level)
-  if level = "debug" then
+  if level == "debug" then
     logging.debugOn = true
     logging.infoOn = true
     logging.warningOn = true
     logging.warnOn = true
     logging.errorOn = true
     logging.criticalOn = true
-  elseif level = "info" then
+  elseif level == "info" then
     logging.debugOn = false
     logging.infoOn = true
     logging.warningOn = true
     logging.warnOn = true
     logging.errorOn = true
     logging.criticalOn = true
-  elseif level = "warn" then
+  elseif level == "warn" then
     logging.debugOn = false
     logging.infoOn = false
     logging.warningOn = true
     logging.warnOn = true
     logging.errorOn = true
     logging.criticalOn = true
-  elseif level = "warning" then
+  elseif level == "warning" then
     logging.debugOn = false
     logging.infoOn = false
     logging.warningOn = true
     logging.warnOn = false
     logging.errorOn = true
     logging.criticalOn = true
-  elseif level = "error" then
+  elseif level == "error" then
     logging.debugOn = false
     logging.infoOn = false
     logging.warningOn = false
     logging.warnOn = false
     logging.errorOn = true
     logging.criticalOn = true
-  elseif level = "critical" then
+  elseif level == "critical" then
     logging.debugOn = false
     logging.infoOn = false
     logging.warningOn = false
@@ -47,37 +47,37 @@ function logging.level(level)
 end
 
 function logging.debug(string)
-  if debugOn then
+  if logging.debugOn then
     print("DEBUG: "..string)
   end
 end
 
 function logging.info(string)
-  if infoOn then
+  if logging.infoOn then
     print("INFO: "..string)
   end
 end
 
 function logging.warning(string)
-  if warningOn then
+  if logging.warningOn then
     print("WARNING: "..string)
   end
 end
 
 function logging.warn(string)
-  if warnOn then
+  if logging.warnOn then
     print("WARN: "..string)
   end
 end
 
 function logging.error(string)
-  if errorOn then
+  if logging.errorOn then
     pring("ERROR: "..string)
   end
 end
 
 function logging.critical(string)
-  if criticalOn then
+  if logging.criticalOn then
     print("CRITICAL: "..string)
   end
 end
