@@ -72,7 +72,7 @@ end
 
 function logging.error(string)
   if logging.errorOn then
-    pring("ERROR: "..string)
+    print("ERROR: "..string)
   end
 end
 
