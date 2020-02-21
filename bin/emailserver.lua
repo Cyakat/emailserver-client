@@ -14,11 +14,7 @@ str = string
 function scanRaids(user)
   logging.debug("scanning drives for user")
   componentList = component.list()
-  for i = 0, componentList.len,1 do
-    if component.type(componentList[i]) == "hhd"then
-      hhd = componentList[i]
-      mntDir = str.sub(hhd, 3)
-      defaultDir = "/mnt/"..mntDir.."/email/users/"
+  hhds = fs.mounts()
 
 function startup ()
   m.open(1337)
