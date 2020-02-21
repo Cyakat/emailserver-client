@@ -72,34 +72,37 @@ function checkKnownUserAddress(address)
   end
 
   return knownUser
-
-if info == "in" then
-  logging.debug("received in request")
-  knownUser = checkKnownUserAddress(address)
-  if knownUser then
-    logging.debug("received user")
+end
+function main()
+  if info == "in" then
+    logging.debug("received in request")
+    knownUser = checkKnownUserAddress(address)
+    if knownUser then
+      logging.debug("received user")
+      logging.debug("waiting for data")
+      while addressTest != address do
+        _,_,addressTest,_,_, data = event.pull("modem")
+      end
+      logging.debug("received user data")
+      logging.debug("sending user data to server")
+      serverAddress = findCorrespondingServer(address, "user")
+      sendUserDataToServer(serverAddress, data)
+    else
+      logging.debug("assigning new server to client")
+      assignAddress()
+      logging.debug("server assigned")
+    end
+  elseif info == "out" then
+    logging.debug("received out request")
     logging.debug("waiting for data")
-    while addressTest != address do
+    while addressTest != serverAddress do
       _,_,addressTest,_,_, data = event.pull("modem")
     end
-    logging.debug("received user data")
-    logging.debug("sending user data to server")
-    serverAddress = findCorrespondingServer(address, "user")
-    sendUserDataToServer(serverAddress, data)
-  else
-    logging.debug("assigning new server to client")
-    assignAddress()
-    logging.debug("server assigned")
+    logging.debug("recieved server data")
+    address = findCorrespondingServer(serverAddress, "server")
+    logging.debug("found corresponding for user")
+    sendServerDataToUser(address, data)
+    logging.debug("server data sent to user")
   end
-elseif info == "out" then
-  logging.debug("received out request")
-  logging.debug("waiting for data")
-  while addressTest != serverAddress do
-    _,_,addressTest,_,_, data = event.pull("modem")
-  end
-  logging.debug("recieved server data")
-  address = findCorrespondingServer(serverAddress, "server")
-  logging.debug("found corresponding for user")
-  sendServerDataToUser(address, data)
-  logging.debug("server data sent to user")
 end
+main()

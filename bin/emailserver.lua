@@ -2,18 +2,27 @@ fs = require("filesystem")
 comp = require("component")
 event = require("event")
 messageClass = require("messageClassServer")
+logging = require("logging")
 
+logging.level("debug")
 m = comp.modem
 d = comp.data
 str = string
-defaultDir = "/email/users/"
-assignedAddress = ""
 
 --starting size: 6139
 
+function scanRaids(user)
+  logging.debug("scanning drives for user")
+  componentList = component.list()
+  for i = 0, componentList.len,1 do
+    if component.type(componentList[i]) == "hhd"then
+      hhd = componentList[i]
+      mntDir = str.sub(hhd, 3)
+      defaultDir = "/mnt/"..mntDir.."/email/users/"
+
 function startup ()
   m.open(1337)
-  print("generating key pair")
+  logging.info("generating key pari")
   publicKey,privateKey = d.generateKeyPair(256)
 
   publicKeySerialized = publicKey.serialize()
@@ -56,13 +65,13 @@ function readFile (directory, fileName)
 end
 
 function decrypt (text)
-  print("Decrypting")
+  logging.info("Decrypting")
   decryptedText = d.decrypt(text, sharedKey, iv)
   return decryptedText
 end
 
 function encrypt (text)
-  print("Encrypting")
+  logging.info("Encrypting")
   encryptedText = d.encrypt(text, sharedKey, iv)
   return encryptedText
 end
@@ -82,12 +91,12 @@ function getKeyAndIv ()
 end
 
 function signIn ()
-  print("listening for encrypted username")
+  logging.debug("listening for encrypted username")
   if checkIfWanted() then
     _,_,_,_,_, encryptedUser = event.pull("modem")
   end
 
-  print("listening for encrypted password")
+  logging.debug("listening for encrypted password")
   if checkIfWanted() then
     _,_,_,_,_, encryptedPassword = event.pull("modem")
   end
@@ -103,11 +112,11 @@ end
 
 function accountCreate ()
   local blank = "nothing"
-  print("asking if user would like to make an account")
+  logging.info("asking if user would like to make an account")
   makeAccount = encrypt("accountCreate")
   m.broadcast(1337,"out")
   m.broadcast(1337,makeAccount)
-  print("waiting for user response")
+  logging.info("waiting for user response")
   if checkIfWanted() then
     _,_,_,_,_, encryptedResponse = event.pull("modem")
   end
@@ -167,7 +176,7 @@ function main ()
       encryptedMessage5, encryptedShortMessage5 = messageClass.load(5)
 
 
-      print("sending preview messages")
+      logging.info("sending preview messages")
       m.broadcast(1337, "out")
       m.broadcast(1337, encryptedShortMessage1)
       m.broadcast(1337, "out")
@@ -181,7 +190,7 @@ function main ()
 
       sendOrRead = "hi"
       while sendOrRead ~= "exit" do
-        print("asking send or read")
+        logging.info("asking send or read")
         if checkIfWanted() then
           _,_,_,_,_, encryptedSendOrRead = event.pull("modem")
         end
